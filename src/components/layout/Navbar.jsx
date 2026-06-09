@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function Navbar({ dark, setDark, user, onLoginClick, onLogout }) {
+export default function Navbar({ dark, setDark, user, profile, onLoginClick, onLogout, onDashboard, onHome }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
 
@@ -8,12 +8,14 @@ export default function Navbar({ dark, setDark, user, onLoginClick, onLogout }) 
   const txt = dark ? 'text-gray-300 hover:text-orange-400' : 'text-gray-600 hover:text-orange-500'
   const inp = dark ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400'
 
+  const displayName = profile?.full_name || user?.email.split('@')[0] || ''
+
   return (
     <nav className={bg + ' sticky top-0 z-50 border-b transition-colors duration-300'}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16 gap-4">
 
-          <div className="shrink-0">
+          <div className="shrink-0 cursor-pointer" onClick={onHome}>
             <div className={(dark ? 'text-white' : 'text-gray-900') + ' font-bold text-xl'} style={{fontFamily:'Playfair Display,serif'}}>
               Literatura<span className="text-orange-500">.mz</span>
             </div>
@@ -21,7 +23,7 @@ export default function Navbar({ dark, setDark, user, onLoginClick, onLogout }) 
           </div>
 
           <div className="hidden lg:flex items-center gap-1">
-            <a href="#" className={txt + ' px-3 py-1.5 rounded-lg text-sm'}>Inicio</a>
+            <a href="#" onClick={onHome} className={txt + ' px-3 py-1.5 rounded-lg text-sm'}>Inicio</a>
             <a href="#" className={txt + ' px-3 py-1.5 rounded-lg text-sm'}>Livros</a>
             <a href="#" className={txt + ' px-3 py-1.5 rounded-lg text-sm'}>Poesias</a>
             <a href="#" className={txt + ' px-3 py-1.5 rounded-lg text-sm'}>Contos</a>
@@ -54,8 +56,16 @@ export default function Navbar({ dark, setDark, user, onLoginClick, onLogout }) 
 
             {user ? (
               <div className="hidden md:flex items-center gap-2">
+                {profile?.role === 'author' && (
+                  <button
+                    onClick={onDashboard}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-sm rounded-lg font-medium"
+                  >
+                    Meu Painel
+                  </button>
+                )}
                 <span className={(dark ? 'text-gray-300' : 'text-gray-600') + ' text-sm'}>
-                  Ola, {user.email.split('@')[0]}
+                  Ola, {displayName}
                 </span>
                 <button
                   onClick={onLogout}
@@ -100,7 +110,7 @@ export default function Navbar({ dark, setDark, user, onLoginClick, onLogout }) 
             onChange={function(e) { setSearch(e.target.value) }}
             className={inp + ' w-full px-4 py-2 rounded-lg text-sm border outline-none mb-2'}
           />
-          <a href="#" className={txt + ' px-3 py-2.5 rounded-lg text-sm'}>Inicio</a>
+          <a href="#" onClick={onHome} className={txt + ' px-3 py-2.5 rounded-lg text-sm'}>Inicio</a>
           <a href="#" className={txt + ' px-3 py-2.5 rounded-lg text-sm'}>Livros</a>
           <a href="#" className={txt + ' px-3 py-2.5 rounded-lg text-sm'}>Poesias</a>
           <a href="#" className={txt + ' px-3 py-2.5 rounded-lg text-sm'}>Contos</a>
@@ -110,9 +120,16 @@ export default function Navbar({ dark, setDark, user, onLoginClick, onLogout }) 
           <a href="#" className={txt + ' px-3 py-2.5 rounded-lg text-sm'}>Sobre Nos</a>
           <hr className={(dark ? 'border-gray-800' : 'border-gray-200') + ' my-1'} />
           {user ? (
-            <button onClick={onLogout} className={(dark ? 'text-gray-300' : 'text-gray-600') + ' px-3 py-2.5 text-sm text-left'}>
-              Sair
-            </button>
+            <div className="flex flex-col gap-1">
+              {profile?.role === 'author' && (
+                <button onClick={onDashboard} className="bg-orange-500 text-white px-3 py-2.5 rounded-lg text-sm font-medium text-left">
+                  Meu Painel
+                </button>
+              )}
+              <button onClick={onLogout} className={(dark ? 'text-gray-300' : 'text-gray-600') + ' px-3 py-2.5 text-sm text-left'}>
+                Sair
+              </button>
+            </div>
           ) : (
             <button onClick={onLoginClick} className="bg-orange-500 text-white px-3 py-2.5 rounded-lg text-sm font-medium">
               Entrar / Registar
